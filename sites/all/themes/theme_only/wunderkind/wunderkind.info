@@ -1,0 +1,79 @@
+name = WunderKind
+description = WunderKind is Responsive Drupal 7 Theme.
+core = 7.x
+engine = phptemplate
+
+regions[top]                = Top
+regions[content_top]        = Content Top
+regions[content]            = Content
+regions[sidebar]            = Sidebar
+regions[bottom]             = Content Bottom
+regions[help]               = Help
+regions[footer]             = Footer
+
+stylesheets[all][] = fonts/raleway/raleway.css
+stylesheets[all][] = fonts/montserrat/stylesheet.css
+stylesheets[all][] = css/bootstrap.css
+stylesheets[all][] = css/style.css
+stylesheets[all][] = css/font-awesome.min.css
+stylesheets[all][] = css/ionicons.min.css
+stylesheets[all][] = css/liquid-slider.css
+stylesheets[all][] = css/animate.css
+stylesheets[all][] = css/magnific-popup.css
+stylesheets[all][] = css/YTPlayer.css
+stylesheets[all][] = css/cubeportfolio.css
+stylesheets[all][] = css/flexslider.css
+stylesheets[all][] = css/colors/blue.css
+stylesheets[all][] = css/drupal.css
+
+scripts[] = js/bootstrap.min.js
+scripts[] = js/jquery.mb.YTPlayer.js
+scripts[] = js/jquery.stellar.js
+scripts[] = js/jquery.sticky.js
+scripts[] = js/jquery.counterup.min.js
+scripts[] = js/jquery.fitvids.js
+scripts[] = js/modernizr.custom.js
+scripts[] = js/toucheffects.js
+scripts[] = js/wow.min.js
+scripts[] = js/waypoints.min.js
+scripts[] = js/jquery.easing.1.3.min.js
+scripts[] = js/jquery.cubeportfolio.min.js
+scripts[] = js/jquery.touchSwipe.min.js
+scripts[] = js/jquery.liquid-slider.js
+scripts[] = js/jquery.flexslider-min.js
+scripts[] = js/scripts.js
+
+features[] = name
+features[] = logo
+features[] = slogan
+features[] = node_user_picture
+features[] = comment_user_picture
+features[] = comment_user_verification
+features[] = favicon
+features[] = main_menu
+
+settings[toggle_name] = 1
+settings[toggle_logo] = 0
+settings[toggle_slogan] = 1
+settings[toggle_node_user_picture] = 1
+settings[toggle_comment_user_picture] = 1
+settings[toggle_comment_user_verification] = 1
+settings[toggle_favicon] = 1
+settings[toggle_main_menu] = 1
+
+settings[login_account_links] = 1
+settings[retina] = 1
+settings[support] = 1
+settings[blog_author] = 1
+settings[custom_preloader] = 0
+settings[smooth_scroll] = 1
+
+settings[gmap_lat] = 40.717599
+settings[gmap_lng] = -74.005136
+settings[gmap_zoom] = 13
+
+settings[skin] = blue
+
+version = "7.x-1.2.1"
+core = "7.x"
+project = "wunderkind"

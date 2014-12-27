@@ -1,0 +1,1418 @@
+<?php
+
+/**
+ * Implementation of hook_menu()
+ */
+function wunderkind_shortcodes_menu() {
+  variable_set('nd_visualshortcodes_extra_css', drupal_get_path('module', 'wunderkind_shortcodes') . '/css/wunderkind_shortcodes.css');
+  $items['admin/ajax/wunderkind_shortcodes/ionicons_autocomplete'] = array(
+    'page callback' => 'wunderkind_shortcodes_ajax_ionicons_autocomplete',
+    'access arguments' => array('administer nd visualshortcodes'),
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+/**
+ * Implementation of hook_shortcode_info().
+ * Using the same formatting as hook_filter_info()
+ */
+function wunderkind_shortcodes_shortcode_info() {
+  $shortcodes['html'] = array(
+    'title' => t('HTML'),
+    'description' => t('HTML code'),
+    'process callback' => 'wunderkind_shortcodes_shortcode_html',
+    'process backend callback' => 'nd_visualshortcodes_backend_nochilds',
+    'process settings callback' => 'nd_visualshortcodes_shortcode_html_settings',
+    'icon' => 'fa fa-code',
+    'description_field' => 'text',
+  );
+  $shortcodes['quote'] = array(
+    'title' => t('Quote col'),
+    'description' => t('Replace the given text formatted like as a quote.'),
+    'process callback' => 'wunderkind_shortcodes_shortcode_quote',
+    'tips callback' => 'wunderkind_shortcodes_shortcode_quote_tip',
+    'process settings callback' => 'wunderkind_shortcodes_shortcode_quote_settings',
+    'icon' => 'fa fa-quote-right',
+    'child shortcode' => 'html',
+    'description_field' => 'author',
+  );
+  $shortcodes['h'] = array(
+    'title' => t('Highlited text'),
+    'description' => t('Highlite the text.'),
+    'process callback' => 'wunderkind_shortcodes_shortcode_h',
+    'process backend callback' => 'nd_visualshortcodes_backend_nochilds',
+    'tips callback' => 'wunderkind_shortcodes_shortcode_h_tip',
+    'process settings callback' => 'wunderkind_shortcodes_shortcode_h_settings',
+    'icon' => 'fa fa-header',
+    'description_field' => 'text',
+  );
+  $shortcodes['bgh'] = array(
+    'title' => t('Highlited Background'),
+    'description' => t('Highlite the background text.'),
+    'process backend callback' => 'nd_visualshortcodes_backend_nochilds',
+    'description_field' => 'text',
+    'process callback' => 'wunderkind_shortcodes_shortcode_bgh',
+    'icon' => 'fa fa-square',
+  );
+  $shortcodes['bg'] = array(
+    'title' => t('Transparent Background'),
+    'description' => t('Highlite the content with Transparent Background.'),
+    'process callback' => 'wunderkind_shortcodes_shortcode_bg',
+    'process backend callback' => 'nd_visualshortcodes_backend_nochilds',
+    'description_field' => 'text',
+    'icon' => 'fa fa-square-o',
+  );
+  $shortcodes['tooltip'] = array(
+    'title' => t('Tooltip'),
+    'description' => t('Text with tooltip hover effect.'),
+    'process callback' => 'wunderkind_shortcodes_shortcode_tooltip',
+    'process backend callback' => 'nd_visualshortcodes_backend_nochilds',
+    'description_field' => 'text',
+    'icon' => 'fa fa-paperclip',
+  );
+  $shortcodes['progress'] = array(
+    'title' => t('Progress Line'),
+    'description' => t('Progress line with title and percents.'),
+    'process callback' => 'wunderkind_shortcodes_shortcode_progress',
+    'process backend callback' => 'nd_visualshortcodes_backend_nochilds',
+    'process settings callback' => 'wunderkind_shortcodes_shortcode_progress_settings',
+    'tips callback' => 'wunderkind_shortcodes_shortcode_progress_tip',
+    'icon' => 'fa fa-tasks',
+  );
+  $shortcodes['spacer'] = array(
+    'title' => t('Spacer'),
+    'description' => t('Spacer without any content.'),
+    'process callback' => 'wunderkind_shortcodes_shortcode_spacer',
+    'process settings callback' => 'wunderkind_shortcodes_shortcode_spacer_settings',
+    'process backend callback' => 'nd_visualshortcodes_backend_nochilds',
+    'tips callback' => 'wunderkind_shortcodes_shortcode_spacer_tip',
+    'icon' => 'fa fa-circle-o',
+  );
+  $shortcodes['container'] = array(
+    'title' => t('Container'),
+    'description' => t('Container for content.'),
+    'process callback' => 'wunderkind_shortcodes_shortcode_container',
+    'tips callback' => 'wunderkind_shortcodes_shortcode_container_tip',
+    'icon' => 'fa fa-hdd-o',
+  );
+  $shortcodes['row'] = array(
+    'title' => t('Row container with cols'),
+    'description' => t('Container for cols.'),
+    'process callback' => 'wunderkind_shortcodes_shortcode_row',
+    'process backend callback' => 'nd_visualshortcodes_backend_row',
+    'icon' => 'fa fa-th-large',
+    'child shortcode' => 'col'
+  );
+  $shortcodes['col'] = array(
+    'title' => t('Column'),
+    'description' => t('Column with size settings'),
+    'process callback' => 'wunderkind_shortcodes_shortcode_col',
+    'process backend callback' => 'nd_visualshortcodes_backend_col',
+    'process settings callback' => 'nd_visualshortcodes_shortcode_col_settings',
+    'icon' => 'fa fa-columns'
+  );
+  $shortcodes['message'] = array(
+    'title' => t('Message'),
+    'description' => t('Dismissable Message.'),
+    'process callback' => 'wunderkind_shortcodes_shortcode_message',
+    'tips callback' => 'wunderkind_shortcodes_shortcode_message_tip',
+    'icon' => 'fa fa-info-circle',
+    'description_field' => 'color',
+  );
+  $shortcodes['button'] = array(
+    'title' => t('Button link'),
+    'description' => t('Button linked to any page or content.'),
+    'process callback' => 'wunderkind_shortcodes_shortcode_button',
+    'tips callback' => 'wunderkind_shortcodes_shortcode_button_tip',
+    'icon' => 'fa fa-bold',
+    'description_field' => 'text',
+  );
+  $shortcodes['call_to_action'] = array(
+    'title' => t('Call to Action'),
+    'description' => t('Text with button link'),
+    'process callback' => 'wunderkind_shortcodes_shortcode_calltoaction',
+    'tips callback' => 'wunderkind_shortcodes_shortcode_calltoaction_tip',
+    'icon' => 'fa fa-bullhorn',
+    'description_field' => 'header',
+  );
+  $shortcodes['icon_box'] = array(
+    'title' => t('Icon Box'),
+    'description' => t('Icon box with text.'),
+    'process callback' => 'wunderkind_shortcodes_shortcode_iconbox',
+    'tips callback' => 'wunderkind_shortcodes_shortcode_iconbox_tip',
+    'icon' => 'fa fa-star',
+    'description_field' => 'icon',
+  );
+  $shortcodes['social_box'] = array(
+    'title' => t('Social Icon Box'),
+    'description' => t('Social Icon Link with text.'),
+    'process callback' => 'wunderkind_shortcodes_shortcode_socialbox',
+    'tips callback' => 'wunderkind_shortcodes_shortcode_socialbox_tip',
+    'icon' => 'fa fa-comments-o',
+    'description_field' => 'icon',
+  );
+  $shortcodes['pricing_table'] = array(
+    'title' => t('Pricing Table'),
+    'description' => t('Responsive Pricing Table.'),
+    'process callback' => 'wunderkind_shortcodes_shortcode_pricing_table',
+    'tips callback' => 'wunderkind_shortcodes_shortcode_pricing_table_tip',
+    'icon' => 'fa fa-usd',
+    'description_field' => 'title',
+  );
+  $shortcodes['pricing_table_row'] = array(
+    'title' => t('Pricing Table Row'),
+    'description' => t('Pricing Table Row.'),
+    'process callback' => 'wunderkind_shortcodes_shortcode_pricing_table_row',
+    'icon' => 'fa fa-money',
+    'description_field' => 'text',
+  );
+  $shortcodes['view'] = array(
+    'title' => t('View'),
+    'description' => t('Embed content - rendered View. To by dynamical should be used under '),
+    'process callback' => 'wunderkind_shortcodes_shortcode_view',
+    'process backend callback' => 'nd_visualshortcodes_backend_nochilds',
+    'process settings callback' => 'wunderkind_shortcodes_shortcode_view_settings',
+    'icon' => 'fa fa-sun-o',
+    'description_callback' => 'wunderkind_shortcodes_shortcode_view_description',
+    'tips callback' => 'wunderkind_shortcodes_shortcode_view_tip',
+  );
+  $shortcodes['block'] = array(
+    'title' => t('Block'),
+    'description' => t('Render block.'),
+    'process callback' => 'wunderkind_shortcodes_shortcode_block',
+    'process backend callback' => 'nd_visualshortcodes_backend_nochilds',
+    'process settings callback' => 'wunderkind_shortcodes_shortcode_block_settings',
+    'icon' => 'fa fa-file',
+    'description_callback' => 'wunderkind_shortcodes_shortcode_block_description',
+    'tips callback' => 'wunderkind_shortcodes_shortcode_block_tip',
+  );
+  $shortcodes['node'] = array(
+    'title' => t('Node'),
+    'description' => t('Render node.'),
+    'process callback' => 'wunderkind_shortcodes_shortcode_node',
+    'process backend callback' => 'nd_visualshortcodes_backend_nochilds',
+    'tips callback' => 'wunderkind_shortcodes_shortcode_node_tip',
+    'icon' => 'fa fa-file-o',
+    'description_callback' => 'wunderkind_shortcodes_shortcode_node_description',
+  );
+  $shortcodes['video'] = array(
+    'title' => t('Video Iframe'),
+    'description' => t('Iframe adaptive video.'),
+    'process callback' => 'wunderkind_shortcodes_shortcode_video',
+    'process backend callback' => 'nd_visualshortcodes_backend_nochilds',
+    'icon' => 'fa fa-video-camera',
+    'description_field' => 'url',
+    'tips callback' => 'wunderkind_shortcodes_shortcode_video_tip',
+  );
+  $shortcodes['contact'] = array(
+    'title' => t('Contact Form'),
+    'description' => t('Contact Form'),
+    'process callback' => 'wunderkind_shortcodes_shortcode_contact',
+    'icon' => 'fa fa-envelope-o',
+    'tips callback' => 'wunderkind_shortcodes_shortcode_contact_tip',
+  );
+  $shortcodes['counter'] = array(
+    'title' => t('Counter with title'),
+    'description' => t('Animated Counter with Title'),
+    'process callback' => 'wunderkind_shortcodes_shortcode_counter',
+    'tips callback' => 'wunderkind_shortcodes_shortcode_counter_tip',
+    'icon' => 'fa fa-sort-numeric-asc',
+    'description_field' => 'title',
+  );
+  $shortcodes['slider'] = array(
+    'title' => t('Slider'),
+    'description' => t('Slider for any content'),
+    'process callback' => 'wunderkind_shortcodes_shortcode_slider',
+    'tips callback' => 'wunderkind_shortcodes_shortcode_slider_tip',
+    'icon' => 'fa fa-arrows-h',
+  );
+  return $shortcodes;
+}
+
+function _wunderkind_shortcodes_shortcode_attributes($attrs) {
+  if(empty($attrs)) {
+    return '';
+  }
+  $allowed_attributes = array('class' => 'class', 'extra_classes' => 'class', 'href' => 'href', 'id' => 'id', 'animation' => 'data-appear-animation', 'animation_delay' => 'data-appear-animation-delay', 'style' => 'style', 'data-original-title' => 'data-original-title', 'data-placement' => 'data-placement', 'data-wow-delay' => 'data-wow-delay');
+  if (isset($attrs['link']) && $attrs['link'] == $_GET['q']) {
+    $attrs['class'] = (isset($attrs['class']) ? $attrs['class'] : '') . ' active'; 
+  }
+  if(isset($attrs['animation'])) {
+    $attrs['class'] = (isset($attrs['class']) ? $attrs['class'] : '') . ' wow ' . $attrs['animation'];
+  }
+  if(isset($attrs['delay'])) {
+    $attrs['data-wow-delay'] = $attrs['delay'];
+  }
+  $output = '';
+  $attrs_array = array();
+  foreach($attrs as $name => $value) {
+    $value = trim($value);
+    if(strpos($name, 'style_') === 0) {
+      $value_style = str_replace(array('style_', '_'), array('', '-'), $name);
+      if(strpos($value_style, 'border-radius') !== FALSE) {
+        $value = strpos($value, '%') !== FALSE ? $value : (int)$value . 'px;';
+        $value = '-webkit-' . $value_style. ': ' . $value . '; -moz-' . $value_style. ': ' . $value . '; ' . $value_style. ': ' . $value . ';';
+      }
+      elseif(strpos($name, 'margin') !== FALSE || strpos($name, 'padding') !== FALSE || strpos($name, 'width') !== FALSE || strpos($name, 'height') !== FALSE) {
+        $value = strpos($value, '%') !== FALSE ? $value : (int)$value . 'px;';
+        $value =  $value_style . ': ' . $value;
+      }
+      elseif(strpos($name, 'color') !== FALSE) {
+        $value =  $value_style . ': #' . trim($value, '#') . ';';
+      }
+      elseif(strpos($value_style, 'image') !== FALSE) {
+        $file = file_load($value);
+        $filename = isset($file->uri) ? file_create_url($file->uri) : '';
+        $value =  $value_style . ': url("' . $filename . '");';
+      }
+      else {
+        $value = $value_style . ': ' . $value . ';';
+      }
+      $name = 'style';
+    }
+    if(isset($allowed_attributes[$name])) {
+      $name = $allowed_attributes[$name];
+      if ($value !== '') {
+        $attrs_array[$name] = (isset($attrs_array[$name]) ? $attrs_array[$name] . ' ' : '') . $value;
+      }
+    }
+    elseif(strpos($name, 'data-') === 0) {
+      if ($value !== '') {
+        $attrs_array[$name] = (isset($attrs_array[$name]) ? $attrs_array[$name] . ' ' : '') . $value;
+      }
+    }
+  }
+  if(isset($attrs['style_background_color']) && strtolower(trim($attrs['style_background_color'], '#')) == '000000') {
+    $attrs_array['class'] = (isset($attrs_array['class']) ? $attrs_array['class'] : '') . ' text-white';
+  }
+  if(isset($attrs['style_background_color']) && strtolower(trim($attrs['style_background_color'], '#')) == 'ffffff') {
+    $attrs_array['class'] = (isset($attrs_array['class']) ? $attrs_array['class'] : '') . ' text-black';
+  }
+  if(isset($attrs['text_align']) && $attrs['text_align']) {
+    $attrs_array['style'] = (isset($attrs_array['style']) ? $attrs_array['style'] : '') . ' text-align:'. $attrs['text_align'] . ';';
+  }
+
+  foreach($attrs_array as $name => $value) {
+    $output .= " $name = '$value'";
+  }
+  return $output;
+}
+
+function wunderkind_shortcodes_shortcode_spacer($attrs, $text) {
+  $attrs['class'] = 'spacer ' . (isset($attrs['class']) ? $attrs['class'] : '');
+  $text = '<div ' . _wunderkind_shortcodes_shortcode_attributes($attrs)  . '></div>';
+  return $text;
+}
+
+function wunderkind_shortcodes_shortcode_spacer_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Spacer:</strong><br/>[spacer][/spacer]</br>';
+  $output[] = '<strong>Available classes:</strong> <strong>xs</strong> - 10px <strong>sm</strong> - 20px <strong>md</strong> - 40px <strong>lg</strong> - 60px <strong>xlg</strong> - 80px</p>';
+  return implode(' ', $output);
+}
+
+function wunderkind_shortcodes_shortcode_spacer_settings($attrs, $text) {
+  $form['style_height'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Height'),
+    '#default_value' => isset($attrs['style_height']) ? $attrs['style_height'] : '',
+    '#attributes' => array('class' => array('form-control')),
+  );
+  return $form;
+}
+
+function wunderkind_shortcodes_shortcode_progress($attrs, $text) {
+  $attrs['class'] = (isset($attrs['class']) ? $attrs['class'] : '') . ' skill-col';
+  $text = '<div ' . _wunderkind_shortcodes_shortcode_attributes($attrs) . '>
+    <p><em>' . $text . '</em></p>
+    <div class="skillbar" data-percent="' . $attrs['percent'] .'%">
+        <div class="skillbar-title"><span>' . $attrs['percent'] .'%</span></div>
+        <div class="skillbar-bar"></div>
+    </div>
+  </div>';
+  return $text;
+}
+
+function wunderkind_shortcodes_shortcode_progress_settings($attrs, $text) {
+  $attrs['title'] = isset($attrs['title']) && $attrs['title'] ? $attrs['title'] : $text;
+  $form['title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Title'),
+    '#default_value' => isset($attrs['title']) ? $attrs['title'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-7">',
+  );
+  $form['percent'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Percent'),
+    '#default_value' => isset($attrs['percent']) ? $attrs['percent'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-2">',
+    '#suffix' => '</div></div>',
+  );
+  return $form;
+}
+
+function wunderkind_shortcodes_shortcode_progress_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Progress bar:</strong><br/>[progress percent = "90"]Design[/progress]</br>';
+  return implode(' ', $output);
+}
+
+function wunderkind_shortcodes_shortcode_video($attrs, $text) {
+  $attrs['class'] = isset($attrs['class']) ? ' ' . $attrs['class'] : '';
+  $iframe_attrs = (isset($attrs['width']) ? 'width="' . $attrs['width'] .'"' : '') . (isset($attrs['height']) ? ' height ="' . $attrs['height'] . '"' : '');
+  if(!$iframe_attrs) {
+    $attrs['class'] .= ' video-holder';
+  }
+  if(strpos($text, 'vimeo') !== FALSE) {
+     preg_match('|/(\d+)|', $text, $matches);
+     $video_url = 'http://player.vimeo.com/video/' . $matches[1] . '?title=0&amp;byline=0&amp;portrait=0&amp;color=FFFFFF';
+  }
+  else if(strpos($text, 'youtube') !== FALSE){
+     $id = substr($text, strpos($text, '?v=') + 3);
+     $video_url = 'http://www.youtube.com/embed/' . $id .'?theme=dark&color=white';
+  }
+  $text = '
+  <figure  ' . _wunderkind_shortcodes_shortcode_attributes($attrs)  . '>
+    <iframe src="' . $video_url . '" ' . $iframe_attrs . '></iframe>
+  </figure>';
+  return $text;
+}
+
+function wunderkind_shortcodes_shortcode_video_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Video iFrame:</strong><br/>[video]player.vimeo.com/video/7449107[/video]</br>';
+  $output[] = '<strong>Text</strong> - Embed URL of the video.</p>';
+  return implode(' ', $output);
+}
+
+function wunderkind_shortcodes_shortcode_video_settings($attrs, $text) {
+  $attrs['url'] = isset($attrs['url']) && $attrs['url'] ? $attrs['url'] : $text;
+  $form['url'] = array(
+    '#type' => 'textfield' ,
+    '#title' => t('Video Url'),
+    '#default_value' => isset($attrs['url']) ? $attrs['url'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#description' => t('Supports: YouTube and Vimeo')
+  );
+  $form['width'] = array(
+    '#type' => 'textfield' ,
+    '#title' => t('Width'),
+    '#default_value' => isset($attrs['width']) ? $attrs['width'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $form['height'] = array(
+    '#type' => 'textfield' ,
+    '#title' => t('Height'),
+    '#default_value' => isset($attrs['height']) ? $attrs['height'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>',
+  );
+  return $form;
+}
+
+function wunderkind_shortcodes_shortcode_contact($attrs, $text) {
+  $text = '';
+  if (user_access('access site-wide contact form') && module_exists('contact')) {
+    if (!flood_is_allowed('contact', variable_get('contact_hourly_threshold', 3))) {
+      $text = t("You cannot send more than %number messages per hour. Please try again later.", array('%number' => variable_get('contact_hourly_threshold', 3)));
+    }
+    else {
+      module_load_include('inc', 'contact', 'contact.pages');
+      $content = drupal_get_form('contact_site_form');
+      // Allow users to alter contact form fields
+      $alter_fields = array('name', 'mail', 'subject', 'message');
+      foreach($alter_fields as $field) {
+        if(isset($attrs[$field])) {
+          $content[$field]['#title'] = t($attrs[$field]);
+          $content[$field]['#attributes']['placeholder'] = t($attrs[$field]);
+        }
+      }
+      $text = drupal_render($content);
+      if($attrs_output = _wunderkind_shortcodes_shortcode_attributes($attrs)) {
+        $text = '<div ' . $attrs_output . '>' . $text . '</div>';
+      }
+    }
+  }
+  return $text;
+}
+
+function wunderkind_shortcodes_shortcode_contact_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Contact Form:</strong><br/>[contact name = "Name field Title"][/contact]</br>';
+  $output[] = 'Override default title for fields: <strong>name</strong>, <strong>subject</strong>, <strong>mail</strong>, <strong>message</strong></p>';
+  return implode(' ', $output);
+}
+
+function wunderkind_shortcodes_shortcode_contact_settings($attrs, $text) {
+  $form['name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Name'),
+    '#default_value' => isset($attrs['name']) ? $attrs['name'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => t('Override fields titles:') . '<div class = "row"><div class = "col-sm-6">',
+  );
+  $form['mail'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Email'),
+    '#default_value' => isset($attrs['mail']) ? $attrs['mail'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>'
+  );
+  $form['subject'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Subject'),
+    '#default_value' => isset($attrs['subject']) ? $attrs['subject'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $form['message'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Message'),
+    '#default_value' => isset($attrs['message']) ? $attrs['message'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>'
+  );
+
+  return $form;
+}
+
+function wunderkind_shortcodes_shortcode_counter($attrs, $text) {
+  $attrs['class'] = 'fact-container ' . (isset($attrs['class']) ? $attrs['class'] : '');
+  $attrs['title'] = isset($attrs['title']) && $attrs['title'] ? $attrs['title'] : $text;
+  $text = '<div ' . _wunderkind_shortcodes_shortcode_attributes($attrs)  . '>
+    <div class="fact">
+      <span class="counter highlight">' . $attrs['number'] . '</span>
+      <p class="lead">' . $attrs['title'] . '</p>
+    </div>
+  </div>';
+  return $text;
+}
+
+function wunderkind_shortcodes_shortcode_counter_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Counter:</strong><br/>[counter number = "10"]Projects[/counter]</p>';
+  return implode(' ', $output);
+}
+
+function wunderkind_shortcodes_shortcode_counter_settings($attrs, $text) {
+  $attrs['title'] = isset($attrs['title']) && $attrs['title'] ? $attrs['title'] : $text;
+  $form['title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Title'),
+    '#default_value' => isset($attrs['title']) ? $attrs['title'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-7">',
+  );
+  $form['number'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Number'),
+    '#default_value' => isset($attrs['number']) ? $attrs['number'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-2">',
+    '#suffix' => '</div></div>',
+  );
+  return $form;
+}
+
+function wunderkind_shortcodes_shortcode_slider($attrs, $text) {
+  global $slider_number;
+  $slider_number = (isset($slider_number) ? $slider_number : 0) + 1;
+  $attrs['class'] = 'liquid-slider ' . (isset($attrs['class']) ? $attrs['class'] : '');
+  $attrs['id'] = 'liquid-slider-' . time() . $slider_number;
+  $text = '<div ' . _wunderkind_shortcodes_shortcode_attributes($attrs)  . '>' . $text . '</div>';
+  return $text;
+}
+
+function wunderkind_shortcodes_shortcode_slider_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Slider:</strong><br/>[slider]&lt;div&gt;Slide 1&lt;/div&gt;&lt;div&gt;Slide 2&lt;/div&gt;[/slider]</p>';
+  return implode(' ', $output);
+}
+
+function wunderkind_shortcodes_shortcode_quote($attrs, $text) {
+  if(isset($attrs['blockquote']) && $attrs['blockquote']) {
+    $output = '<blockquote ' . _wunderkind_shortcodes_shortcode_attributes($attrs) . '>
+      <p>' . $text . ' </p>
+      ' . ($attrs['author'] ? '<small>' . $attrs['author'] . '</small>' : '') . '
+    </blockquote>';
+  }
+  else {
+    $attrs['class'] = (isset($attrs['class']) ? $attrs['class'] : '') . ' quote centered';
+    if(isset($attrs['image']) && $attrs['image']) {
+      $img = $attrs['image'];
+    }
+    elseif(isset($attrs['image_fid']) && $attrs['image_fid']) {
+      $img = file_load($attrs['image_fid'])->uri;
+    }
+    $h = isset($img) ? '4' : '2';
+    $img = isset($img) ? theme('image', array('path' => $img)) : '';
+    $output = '<div ' . _wunderkind_shortcodes_shortcode_attributes($attrs) . '>
+      ' . $img . '
+      <h' . $h . '><i class="fa fa-quote-left highlight"></i> ' . $text . ' <i class="fa fa-quote-right highlight"></i></h' . $h . '>
+      <p class="label label-primary">' . $attrs['author'] . '</p>
+    </div>';
+  }
+  return $output;
+}
+
+function wunderkind_shortcodes_shortcode_quote_tip($format, $long) {
+  $output = array();
+  $output[] = '<p>All elements supports <strong>class</strong>, <strong>animation</strong> and <strong>delay</strong> attributes. Supports all <a href = "http://daneden.github.io/animate.css/">animation.css</a> values. Delay value in ms. ';
+  $output[] = '<p><strong>Quote:</strong><br/>[quote author = "Author Name" image = "/files/author.png" blockquote]text[/quote]</br>';
+  $output[] = '<strong>blockquote</strong> - Simple left aligned quote with author name, <strong>image</strong> - URL to the image.</p>';
+  return implode(' ', $output);
+}
+
+function wunderkind_shortcodes_shortcode_quote_settings($attrs, $text) {
+  $form['blockquote'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Blockquote'),
+    '#default_value' => isset($attrs['blockquote']) ? $attrs['blockquote'] : 0,
+    '#attributes' => array('class' => array('blockquote-shortcode-flag'))
+  );
+  $form['author'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Author'),
+    '#default_value' => isset($attrs['author']) ? $attrs['author'] : '',
+    '#attributes' => array('class' => array('form-control')),
+  );
+  $filename = isset($attrs['image_fid']) && !empty($attrs['image_fid']) ? file_load($attrs['image_fid'])->uri : (isset($attrs['image']) ? $attrs['image'] : '');
+  $image = $filename ? theme('image_style', array('style_name' => 'media_thumbnail', 'path' => $filename)) : '';
+  $form['image_fid'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Image'),
+    '#default_value' => isset($attrs['image_fid']) ? $attrs['image_fid'] : '',
+    '#states' => array(
+      'visible' => array(
+        '.blockquote-shortcode-flag' => array('checked' => FALSE),
+      ),
+    ),
+    '#attributes' => array('class' => array('image-media-upload hidden')),
+    '#field_suffix' => '<div class = "preview-image">' . $image . '</div><a href = "#" class = "media-upload button">' . t('Upload Image') .'</a><a href = "#" class = "media-remove button">' . t('Remove Image') .'</a>'
+  );
+  // Added only to save the old image attribute
+  if(isset($attrs['image']) && !isset($attrs['image_fid']) && !$attrs['image_fid']) {
+    $form['image'] = array(
+      '#type' => 'textfield',
+      '#default_value' => $attrs['image'],
+      '#attributes' => array('class' => array('hidden fid-old-field'))
+    );
+  }
+  return $form;
+}
+
+function wunderkind_shortcodes_shortcode_html($attrs, $text) {
+  // Made a little hack for tables which can't be controled because rendered some WYSIWYG editor, and also list styles
+  $text = str_replace(array('<table', '<ul>', '<ol>'), array('<table class = "table table-bordered table-striped"', '<ul class = "list">', '<ol class = "list">'), $text);
+  $attrs_output = _wunderkind_shortcodes_shortcode_attributes($attrs);
+  if($attrs_output) {
+    return '<div ' . $attrs_output . '>' . $text . '</div>';
+  }
+  return $text;
+}
+
+function wunderkind_shortcodes_shortcode_calltoaction($attrs, $text) {
+  $link = strpos($attrs['link'], '#') === FALSE ? url($attrs['link']) : $attrs['link'];
+  $link_text = isset($attrs['link_text']) ? $attrs['link_text'] : t('Read More');
+
+  $type_class = array('center dark' => '1 text-center text-white', 'center white' => '2 text-center', 'left dark' => '3 text-white', 'left white' => '4', 'right dark' => '5 text-white', 'right white' => '6');
+  $text_class = array('center dark' => '', 'center white' => '', 'left dark' => '', 'left white' => '', 'right dark' => 'action-5-info', 'right white' => 'action-5-info');
+  $btn_class = array('center dark' => 'action-btn', 'center white' => 'action-btn', 'left dark' => 'action-btn', 'left white' => 'action-btn', 'right dark' => 'action-5-btn', 'right white' => 'action-5-btn');
+
+  $attrs['type'] = isset($attrs['type']) ? $attrs['type'] : 'center dark';
+  $attrs['class'] = 'call-to-action call-action-' . $type_class[$attrs['type']] . (isset($attrs['class']) ? ' '. $attrs['class'] : '');
+  $attrs['class'] .= isset($attrs['no_border']) && $attrs['no_border'] ? ' no-border' : '';
+
+  $text = '<div ' . _wunderkind_shortcodes_shortcode_attributes($attrs)  . '>
+    <div class="' . $text_class[$attrs['type']] . '">
+      ' . (isset($attrs['header']) ? '<h3><small>' . $attrs['header'] . '</small></h3>' : '') . '
+      ' . ($text ? '<p>' . $text . '</p>' : '') . '
+    </div>
+    <div class="' . $btn_class[$attrs['type']] . '">
+      <a href="' . $link . '" target="_blank" class="btn btn-primary btn-lg btn-responsive">' . $link_text . '</a>
+    </div>
+  </div>';
+  return $text;
+}
+
+function wunderkind_shortcodes_shortcode_calltoaction_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Call to action:</strong><br/>[call_to_action link = "contact" link_text = "Read More" header = "Buy it now" type = "left white"]Text[/call_to_action]</br>';
+  $output[] = '<strong>link</strong>, <strong>link_text</strong> - URL and Text of the Button link.</br>';
+  $output[] = '<strong>type</strong> - 6 possible types: <strong>left white</strong>, <strong>left dark</strong>, <strong>center white</strong>, <strong>center dark</strong>, <strong>right white</strong>, <strong>right dark</strong>.
+  <strong>Available Classes</strong>: <strong>no-border</strong> - remove border from box</br>';
+  return implode(' ', $output);
+}
+
+function wunderkind_shortcodes_shortcode_calltoaction_settings($attrs, $text) {
+  $form['link_text'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Link Text'),
+    '#default_value' => isset($attrs['link_text']) ? $attrs['link_text'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $form['link'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Link'),
+    '#default_value' => isset($attrs['link']) ? $attrs['link'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>',
+  );
+  $form['header'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Header Text'),
+    '#default_value' => isset($attrs['header']) ? $attrs['header'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $types = array('left white', 'left dark', 'center white', 'center dark', 'right white', 'right dark');
+  $form['type'] = array(
+    '#type' => 'select',
+    '#title' => t('Type'),
+    '#options' => array_combine($types, $types),
+    '#default_value' => isset($attrs['type']) ? $attrs['type'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>',
+  );
+  $form['no_border'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('No Border'),
+    '#options' => array_combine($types, $types),
+    '#default_value' => isset($attrs['no_border']) ? $attrs['no_border'] : '',
+  );
+  return $form;
+}
+
+function wunderkind_shortcodes_shortcode_h($attrs, $text) {
+  $attrs['class'] = 'highlight' . (isset($attrs['class']) ? ' ' . $attrs['class'] : '');
+  $output = isset($attrs['prefix']) ? $attrs['prefix'] : '';
+  $text = isset($attrs['text']) && $attrs['text'] ? $attrs['text'] : $text;
+  $output .= '<span ' . _wunderkind_shortcodes_shortcode_attributes($attrs) . '>' . $text . '</span>';
+  $output .= isset($attrs['suffix']) ? $attrs['suffix'] : '';
+  $output = isset($attrs['paragraph']) && $attrs['paragraph'] ? '<p class = "lead">' . $output . '</p>' : $output;
+  return $output;
+}
+
+function wunderkind_shortcodes_shortcode_h_settings($attrs, $text) {
+  $attrs['text'] = isset($attrs['text']) && $attrs['text'] ? $attrs['text'] : $text;
+  $form['text'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Text'),
+    '#default_value' => isset($attrs['text']) ? $attrs['text'] : '',
+    '#attributes' => array('class' => array('form-control')),
+  );
+  $form['prefix'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Prefix'),
+    '#default_value' => isset($attrs['prefix']) ? $attrs['prefix'] : '',
+    '#attributes' => array('class' => array('form-control')),
+  );
+  $form['suffix'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Suffix'),
+    '#default_value' => isset($attrs['suffix']) ? $attrs['suffix'] : '',
+    '#attributes' => array('class' => array('form-control')),
+  );
+  $form['paragraph'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Paragraph'),
+    '#default_value' => isset($attrs['paragraph']) ? $attrs['paragraph'] : '',
+  );
+  return $form;
+}
+
+function wunderkind_shortcodes_shortcode_h_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Highlite text:</strong><br/>[h]Highlited text[/h]</p>';
+  $output[] = '<p><strong>Highlite background text:</strong><br/>[bgh color = "green"]Highlited text[/bgh]</br>';
+  $output[] = '<strong>color</strong>: <strong>grey</strong>, <strong>aqua</strong>, <strong>green</strong>, <strong>blue</strong>, <strong>orange</strong>, <strong>red</strong></p>';
+  $output[] = '<p><strong>Tranparent background:</strong><br/>[bg]Highlited Content[/bg]</p>';
+  $output[] = '<p><strong>Tooltip:</strong><br/>[tooltip title = "Tooltip" position = "left"]Text[/tooltip]</p>';
+  return implode(' ', $output);
+}
+
+function wunderkind_shortcodes_shortcode_bgh($attrs, $text) {
+  $color_classes = array('grey' => 'default', 'aqua' => 'primary', 'green' => 'success', 'blue' => 'info', 'orange' => 'warning', 'red' => 'danger');
+  $class = 'label label-' . ($color_classes[isset($attrs['color']) ? $attrs['color'] : 'grey']);
+  $attrs['class'] = $class . (isset($attrs['class']) ? ' ' . $attrs['class'] : '');
+  $text = isset($attrs['text']) && $attrs['text'] ? $attrs['text'] : $text;
+  $output = isset($attrs['prefix']) ? $attrs['prefix'] : '';
+  $output .= '<span ' . _wunderkind_shortcodes_shortcode_attributes($attrs) . '>' . $text . '</span>';
+  $output .= isset($attrs['suffix']) ? $attrs['suffix'] : '';
+  return $output;
+}
+
+function wunderkind_shortcodes_shortcode_bgh_settings($attrs, $text) {
+  $attrs['text'] = isset($attrs['text']) && $attrs['text'] ? $attrs['text'] : $text;
+  $form['text'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Text'),
+    '#default_value' => isset($attrs['text']) ? $attrs['text'] : '',
+    '#attributes' => array('class' => array('form-control')),
+  );
+  $form['prefix'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Prefix'),
+    '#default_value' => isset($attrs['prefix']) ? $attrs['prefix'] : '',
+    '#attributes' => array('class' => array('form-control')),
+  );
+  $form['suffix'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Suffix'),
+    '#default_value' => isset($attrs['suffix']) ? $attrs['suffix'] : '',
+    '#attributes' => array('class' => array('form-control')),
+  );
+  $colors = array('grey', 'aqua', 'green', 'blue', 'orange', 'red');
+  $form['color'] = array(
+    '#type' => 'radios',
+    '#title' => t('Color'),
+    '#options' => array_combine($colors, $colors),
+    '#default_value' => isset($attrs['color']) ? $attrs['color'] : 'grey',
+    '#attributes' => array('class' => array('color-radios')),
+  );
+  return $form;
+}
+
+function wunderkind_shortcodes_shortcode_bg($attrs, $text) {
+  $attrs['class'] = 'phone-info' . (isset($attrs['class']) ? ' ' . $attrs['class'] : '');
+  $text = isset($attrs['text']) && $attrs['text'] ? $attrs['text'] : $text;
+  $output = isset($attrs['prefix']) ? $attrs['prefix'] : '';
+  $output = '<div ' . _wunderkind_shortcodes_shortcode_attributes($attrs) . '>' . $text . '</div>';
+  $output .= isset($attrs['suffix']) ? $attrs['suffix'] : '';
+  return $output;
+}
+
+function wunderkind_shortcodes_shortcode_bg_settings($attrs, $text) {
+  $attrs['text'] = isset($attrs['text']) && $attrs['text'] ? $attrs['text'] : $text;
+  $form['text'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Text'),
+    '#default_value' => isset($attrs['text']) ? $attrs['text'] : '',
+    '#attributes' => array('class' => array('form-control')),
+  );
+  $form['prefix'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Prefix'),
+    '#default_value' => isset($attrs['prefix']) ? $attrs['prefix'] : '',
+    '#attributes' => array('class' => array('form-control')),
+  );
+  $form['suffix'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Suffix'),
+    '#default_value' => isset($attrs['suffix']) ? $attrs['suffix'] : '',
+    '#attributes' => array('class' => array('form-control')),
+  );
+  return $form;
+}
+
+function wunderkind_shortcodes_shortcode_tooltip($attrs, $text) {  
+  $attrs['href'] = isset($attrs['href']) ? $attrs['href'] : '#';
+  $attrs['data-original-title'] = isset($attrs['title']) ? $attrs['title'] : '';
+  $attrs['data-placement'] = isset($attrs['position']) ? $attrs['position'] : '';
+  $text = isset($attrs['text']) && $attrs['text'] ? $attrs['text'] : $text;
+  $output = isset($attrs['prefix']) ? $attrs['prefix'] : '';
+  $output = '<a data-toggle="tooltip" title="" ' . _wunderkind_shortcodes_shortcode_attributes($attrs) . '>' . $text . '</a>';
+  $output .= isset($attrs['suffix']) ? $attrs['suffix'] : '';
+  return $output;
+}
+
+function wunderkind_shortcodes_shortcode_tooltip_settings($attrs, $text) {
+  $attrs['text'] = isset($attrs['text']) && $attrs['text'] ? $attrs['text'] : $text;
+  $form['text'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Text'),
+    '#default_value' => isset($attrs['text']) ? $attrs['text'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">'
+  );
+  $form['href'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Link'),
+    '#default_value' => isset($attrs['href']) ? $attrs['href'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>'
+  );
+  $form['prefix'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Prefix'),
+    '#default_value' => isset($attrs['prefix']) ? $attrs['prefix'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">'
+  );
+  $form['suffix'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Suffix'),
+    '#default_value' => isset($attrs['suffix']) ? $attrs['suffix'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>'
+  );
+  $form['title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Title'),
+    '#default_value' => isset($attrs['title']) ? $attrs['title'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">'
+  );
+  $positions = array('left' => t('Left'), 'top' => t('Top'), 'right' => t('Right'), 'bottom' => t('Bottom'));
+  $form['position'] = array(
+    '#type' => 'select',
+    '#title' => t('Position'),
+    '#options' => $positions,
+    '#default_value' => isset($attrs['position']) ? $attrs['position'] : 'grey',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>'
+  );
+  return $form;
+}
+
+function wunderkind_shortcodes_shortcode_iconbox($attrs, $text) {
+  $attrs['class'] = 'about-row ' . (isset($attrs['class']) ? $attrs['class'] : '');
+  $text = '<div ' . _wunderkind_shortcodes_shortcode_attributes($attrs)  . '>
+    <div class="about-icon">
+      <i class="icon ion-' . $attrs['icon'] . ' ion-3x highlight"></i>' .
+      (isset($attrs['bg_icon']) && $attrs['bg_icon'] ? '<i class="icon ion-' . $attrs['bg_icon'] . ' back-icon"></i>': '') . '
+    </div>
+    <div class="about-info">
+       ' . $text . '
+    </div>
+  </div>';
+  return $text;
+}
+
+function wunderkind_shortcodes_shortcode_iconbox_settings($attrs, $text) {
+  $form['icon'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Icon'),
+    '#default_value' => isset($attrs['icon']) ? $attrs['icon'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#autocomplete_path' => 'admin/ajax/wunderkind_shortcodes/ionicons_autocomplete',
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">'
+  );
+  $form['bg_icon'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Background Icon'),
+    '#default_value' => isset($attrs['bg_icon']) ? $attrs['bg_icon'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#autocomplete_path' => 'admin/ajax/wunderkind_shortcodes/ionicons_autocomplete',
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>'
+  );
+  return $form;
+}
+
+function wunderkind_shortcodes_shortcode_iconbox_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Icon Box:</strong><br/>[icon_box icon = "icon ion-speakerphone" big_icon]Text[/icon_box]</br>';
+  $output[] = 'Available attributes: <strong>icon</strong> - Icon font class, <strong>bg_icon</strong> - Big half-transparent icon on the background</br>';
+  return implode(' ', $output);
+}
+
+function wunderkind_shortcodes_shortcode_socialbox($attrs, $text) {
+  $attrs['class'] = (isset($attrs['class']) ? $attrs['class'] : '');
+  $link = strpos($attrs['link'], '#') === FALSE ? url($attrs['link']) : $attrs['link'];
+  $text = '<div class = "connected-icon centered"><a target="_blank" href="' . $link . '" ' . _wunderkind_shortcodes_shortcode_attributes($attrs)  . '>
+    <span class="fa-stack fa-lg fa-4x">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa ' . $attrs['icon'] . ' fa-stack-1x fa-inverse"></i>
+    </span><br>'
+      . (isset($attrs['title']) ? '<span class="lead">' . $attrs['title'] . '</span><br>' : '')
+      . $text  . '
+  </a></div>';
+  return $text;
+}
+
+function wunderkind_shortcodes_shortcode_socialbox_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Icon Box:</strong><br/>[icon_box icon = "fa-facebook" title = "Facebook" link = "http://facebook.com"]Text[/icon_box]</br>';
+  return implode(' ', $output);
+}
+
+function wunderkind_shortcodes_shortcode_socialbox_settings($attrs, $text) {
+  $form['icon'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Icon'),
+    '#default_value' => isset($attrs['icon']) ? $attrs['icon'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#autocomplete_path' => 'admin/ajax/nd_visualshortcodes/icons_autocomplete/font_awesome',
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+    '#suffix' => '</div></div>'
+  );
+  $form['title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Title'),
+    '#default_value' => isset($attrs['title']) ? $attrs['title'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">'
+  );
+  $form['link'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Link'),
+    '#default_value' => isset($attrs['link']) ? $attrs['link'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>'
+  );
+  return $form;
+}
+
+function wunderkind_shortcodes_shortcode_pricing_table($attrs, $text) {
+  global $pricing_table_rows;
+  $attrs['class'] = (isset($attrs['class']) ? $attrs['class'] : '') . ' price-box' . (isset($attrs['active']) || in_array('active', $attrs) ? '-big' : '');
+  $attrs = shortcode_attrs(array(
+      'title' => t('Basic'),
+      'currency' => '$',
+      'link' => '<front>',
+      'button' => t('Sign Up Now'),
+      'price' => '00',
+      'price_text' => '',
+      'class' => '',
+      'animation' => '',
+    ),
+    $attrs
+  );
+  $attrs['class'] .= ' text-center';
+  $link = strpos($attrs['link'], '#') === FALSE ? url($attrs['link']) : $attrs['link'];
+  $text = '<div ' . _wunderkind_shortcodes_shortcode_attributes($attrs)  . '>
+    <div class="price-box-info">
+      <h2>' . $attrs['title'] . '</h2>
+      <h2>' . $attrs['price'] . '<span>' . $attrs['currency'] . '</span><small>' . $attrs['price_text'] . '</small></h2>
+    </div>  
+    <div class="price-box-offer">
+       <ul class="offer-list">
+        ' . $pricing_table_rows . '
+       </ul>
+    </div>
+    <div class="sign-up-btn">
+      <a href="' . $link .  '" class="btn btn-primary">' . $attrs['button'] . '</a>
+    </div>
+  </div>';
+  $pricing_table_rows = '';
+  return $text;
+}
+
+function wunderkind_shortcodes_shortcode_pricing_table_settings($attrs, $text) {
+  $form['title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Title'),
+    '#default_value' => isset($attrs['title']) ? $attrs['title'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-4">'
+  );
+  $form['price'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Price'),
+    '#default_value' => isset($attrs['price']) ? $attrs['price'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-4">'
+  );
+  $form['price_text'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Price Text'),
+    '#default_value' => isset($attrs['price_text']) ? $attrs['price_text'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-4">',
+    '#suffix' => '</div></div>'
+  );
+  $form['button'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Button Text'),
+    '#default_value' => isset($attrs['button']) ? $attrs['button'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">'
+  );
+  $form['link'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Link'),
+    '#default_value' => isset($attrs['link']) ? $attrs['link'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>'
+  );
+  return $form;
+}
+
+function wunderkind_shortcodes_shortcode_pricing_table_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Pricing Table:</strong><br/>[pricing_table title = "Basic" active price = "19" currency = "$" price_text = "per month"]<br/>
+  &nbsp;[pricing_table_row]Text[/pricing_table_row]<br/>
+  [/pricing_table]</br>';
+  $output[] = 'Available variables: <strong>title</strong> - Column title, <strong>price</strong>, <strong>currency</strong>, <strong>price_text</strong> - Price description, <strong>button</strong> - Link Button text, <strong>link</strong> - Button link., <strong>active</strong> - Highlighted table<br/>';
+  return implode(' ', $output);
+}
+
+function wunderkind_shortcodes_shortcode_pricing_table_row($attrs, $text) {
+  global $pricing_table_rows;
+  $attrs['class'] = isset($attrs['class']) ? $attrs['class'] : '';
+  $output = isset($attrs['bold']) && $attrs['bold'] ? '<span>' . $attrs['bold'] . '</span>' : '';
+  $output .= isset($attrs['text']) ? $attrs['text'] : '';
+  // If cross selected then output only it
+  $output = isset($attrs['cross']) && $attrs['cross'] ? '<i class="icon ion-close-round"></i>' : $output;
+  $pricing_table_rows .= '<li ' . _wunderkind_shortcodes_shortcode_attributes($attrs)  . '>' . $output . $text .'</li>';
+  return '';
+}
+
+function wunderkind_shortcodes_shortcode_pricing_table_row_settings($attrs, $text) {
+  $form['cross'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Cross'),
+    '#default_value' => isset($attrs['cross']) ? $attrs['cross'] : FALSE,
+    '#attributes' => array('class' => array('cross-checkbox')),
+  );
+  $form['bold'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Bold'),
+    '#default_value' => isset($attrs['bold']) ? $attrs['bold'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+    '#states' => array(
+      'invisible' => array(
+        '.cross-checkbox' => array('checked' => TRUE)
+      )
+    )
+  );
+  $attrs['text'] = isset($attrs['text']) ? $attrs['text'] : $text;
+  $form['text'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Text'),
+    '#default_value' => isset($attrs['text']) ? $attrs['text'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#states' => array(
+      'invisible' => array(
+        '.cross-checkbox' => array('checked' => TRUE)
+      )
+    )
+  );
+  return $form;
+}
+
+function wunderkind_shortcodes_shortcode_view($attrs, $text) {
+  $attrs['class'] = isset($attrs['class']) ? $attrs['class'] : '';
+  $view = '';
+  if (strpos($attrs['admin_url'], 'admin/structure/views/view') !== FALSE) {
+    $view_name = substr($attrs['admin_url'], strpos($attrs['admin_url'], 'view/') + 5);
+    $parts = explode('/', $view_name);
+    $view_name = $parts[0];
+    $view = isset($parts[2]) ? views_embed_view($view_name, $parts[2]) : views_embed_view($view_name);
+  }
+  $text = '<div ' . _wunderkind_shortcodes_shortcode_attributes($attrs)  . '>' . $view . '</div>';
+  return $text;
+}
+
+function wunderkind_shortcodes_shortcode_view_description($attrs, $text) {
+  if (strpos($attrs['admin_url'], 'admin/structure/views/view') !== FALSE) {
+    $form = wunderkind_shortcodes_shortcode_view_settings($attrs, $text);
+    $value = l($form['admin_url']['#options'][$attrs['admin_url']], $attrs['admin_url'], array('attributes' => array('target' => '_blank')));
+    return $value;
+  }
+}
+
+function wunderkind_shortcodes_shortcode_view_settings($attrs, $text) {
+  $query = db_select('views_display', 'v');
+  $query->leftJoin('views_view', 'vv', 'vv.vid = v.vid');
+  $return = $query
+    ->fields('v', array('id', 'display_title'))
+    ->fields('vv', array('name', 'human_name'))
+    ->condition('v.display_title', 'Master', '<>')
+    ->execute();
+  $views = array();
+  foreach ($return as $row) {
+    $views['admin/structure/views/view/' . $row->name . '/edit/' . $row->id] = check_plain($row->human_name . ': ' . $row->display_title);
+  }
+  asort($views);
+  $form['admin_url'] = array(
+    '#title' => t('View'),
+    '#type' => 'select',
+    '#options' => $views,
+    '#default_value' => isset($attrs['admin_url']) ? $attrs['admin_url'] : '',
+    '#attributes' => array('class' => array('form-control'))
+  );
+  return $form;
+}
+
+function wunderkind_shortcodes_shortcode_view_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>View embed:</strong><br/>[view admin_url="admin/structure/views/view/blog"][/view]</br>';
+  $output[] = '<strong>admin_url</strong> - Administrative url of required view display.</p>';
+  return implode(' ', $output);
+}
+
+function wunderkind_shortcodes_shortcode_block($attrs, $text) {
+  if (strpos($attrs['admin_url'], 'admin/structure/block') !== FALSE) {
+    $block_name = substr($attrs['admin_url'], strpos($attrs['admin_url'], '/manage/') + 8);
+    $parts = explode('/', $block_name);
+    $block = _nikadevs_render_block($parts[0], $parts[1]);
+    $block = render($block);
+  }
+  $attrs = _wunderkind_shortcodes_shortcode_attributes($attrs);
+  $text = $attrs ? '<div ' . $attrs  . '>' . $block . '</div>' : $block;
+  return $text;
+}
+
+function wunderkind_shortcodes_shortcode_block_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Block:</strong><br/>[block admin_url = "admin/structure/block/manage/wunderkind_cms/gmap/configure"][/block]</br>';
+  $output[] = '<strong>admin_url</strong> - URL of the block edit page.</p>';
+  return implode(' ', $output);
+}
+
+function wunderkind_shortcodes_shortcode_block_settings($attrs, $text) {
+  module_load_include('inc', 'block', 'block.admin');
+  $current_theme = variable_get('theme_default', 'none');
+  $blocks = block_admin_display_prepare_blocks($current_theme);
+  usort($blocks, '_sort_blocks');
+  $options = array();
+  foreach ($blocks as $block) {
+    $options['admin/structure/block/manage/' . $block['module']  .'/' . $block['delta'] . '/configure'] = check_plain($block['info']);
+  }
+  asort($options);
+  $form['admin_url'] = array(
+    '#title' => t('Block'),
+    '#type' => 'select',
+    '#options' => $options,
+    '#default_value' => isset($attrs['admin_url']) ? $attrs['admin_url'] : '',
+    '#attributes' => array('class' => array('form-control'))
+  );
+  return $form;
+}
+
+function wunderkind_shortcodes_shortcode_block_description($attrs, $text) {
+  if (strpos($attrs['admin_url'], 'admin/structure/block') !== FALSE) {
+    $form = wunderkind_shortcodes_shortcode_block_settings($attrs, $text);
+    $value = l($form['admin_url']['#options'][$attrs['admin_url']], $attrs['admin_url'], array('attributes' => array('target' => '_blank')));
+    return $value;
+  }
+}
+
+function wunderkind_shortcodes_shortcode_node($attrs, $text) {
+  if (strpos($attrs['admin_url'], 'node/') !== FALSE) {
+    $node_name = substr($attrs['admin_url'], strpos($attrs['admin_url'], 'node/') + 5);
+    $parts = explode('/', $node_name);
+    $node = node_view(node_load($parts[0]));
+    $output = is_numeric($parts[0]) ? render($node) : '';
+  }
+  $text = $attrs = _wunderkind_shortcodes_shortcode_attributes($attrs) ? '<div ' . $attrs  . '>' . $output . '</div>' : $output;
+  return $text;
+}
+
+function wunderkind_shortcodes_shortcode_node_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Node:</strong><br/>[node admin_url = "node/1/edit"][/node]</br>';
+  $output[] = '<strong>admin_url</strong> - URL of the node edit page.</p>';
+  return implode(' ', $output);
+}
+
+function wunderkind_shortcodes_shortcode_node_description($attrs, $text) {
+  if (strpos($attrs['admin_url'], 'node/') !== FALSE) {
+    $node_name = substr($attrs['admin_url'], strpos($attrs['admin_url'], 'node/') + 5);
+    $parts = explode('/', $node_name);
+    $nid = $parts[0];
+    if(is_numeric($nid)) {
+      $node = node_load($nid);
+      return l($node->title, 'node/' . $nid . '/edit', array('attributes' => array('target' => '_blank')));
+    }
+  }
+}
+
+function wunderkind_shortcodes_shortcode_node_settings($attrs, $text) {
+  $form['admin_url'] = array(
+    '#title' => t('Node Title'),
+    '#type' => 'textfield',
+    '#autocomplete_path' => 'admin/ajax/nd_visualshortcodes/node_autocomplete',
+    '#default_value' => isset($attrs['admin_url']) ? $attrs['admin_url'] : '',
+    '#attributes' => array('class' => array('form-control'))
+  );
+  return $form;
+}
+
+function wunderkind_shortcodes_shortcode_container($attrs, $text) {
+  $attrs['class'] = 'container ' . (isset($attrs['class']) ? $attrs['class'] : '');
+  $text = '<div ' . _wunderkind_shortcodes_shortcode_attributes($attrs) .'>' . $text . '</div>';
+  return $text;
+}
+
+function wunderkind_shortcodes_shortcode_container_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Responsive container:</strong><br/>[container]Content[/container]</br>';
+  $output[] = 'Use this for non-full width content.</p>';
+  $output[] = '<p><strong>Responsive columns:</strong><br/>[row]<br/>[col phone = 12 tablet = 12 desktop = 6 wide = 6]Content with date[/col][/row]</br>';
+  $output[] = 'Describe how many rows will take col in different devices: phone, tablet, desktop, wide. From 1 to 12 rows.</p>';
+  return implode(' ', $output);
+}
+
+function wunderkind_shortcodes_shortcode_row($attrs, $text) {
+  $attrs['class'] = 'row ' . (isset($attrs['class']) ? $attrs['class'] : '');
+  $text = '<div ' . _wunderkind_shortcodes_shortcode_attributes($attrs) .'>' . $text . '</div>';
+  return $text;
+}
+
+function wunderkind_shortcodes_shortcode_col($attrs, $text) {
+  $attrs['class'] = isset($attrs['class']) ? $attrs['class'] : '';
+  if(isset($attrs['phone'])) {
+    $attrs['class'] .= ' col-xs-' . $attrs['phone'];
+  }
+  if(isset($attrs['tablet'])) {
+    $attrs['class'] .= ' col-sm-' . $attrs['tablet'];
+  }
+  if(isset($attrs['desktop'])) {
+    $attrs['class'] .= ' col-md-' . $attrs['desktop'];
+  }
+  if(isset($attrs['wide'])) {
+    $attrs['class'] .= ' col-lg-' . $attrs['wide'];
+  }
+  $text = '<div ' . _wunderkind_shortcodes_shortcode_attributes($attrs) . '>' . $text . '</div>';
+  return $text;
+}
+
+function wunderkind_shortcodes_shortcode_message($attrs, $text) {
+  $attrs['class'] = 'alert ' . (isset($attrs['class']) ? $attrs['class'] : '');
+  $attrs['class'] .= isset($attrs['color']) && $attrs['color'] ? ' ' . $attrs['color'] : '';
+  $attrs['class'] .= isset($attrs['dismissable']) && $attrs['dismissable'] ? ' alert-dismissable' : '';
+  $text = (isset($attrs['dismissable']) && $attrs['dismissable'] ? '<button type="button" class="close" data-dismiss="alert" aria-hidden="true"><i class="fa fa-times"></i></button>' : '') . $text;
+  $text = '<div ' . _wunderkind_shortcodes_shortcode_attributes($attrs)  . '>' . $text . '</div>';
+  return $text;
+}
+
+function wunderkind_shortcodes_shortcode_message_settings($attrs, $text) {
+  $colors = array('alert-danger' => t('Red'), 'alert-info' => t('Blue'), 'alert-warning' => t('Orange'), 'alert-success' => t('Green'));
+  $form['color'] = array(
+    '#type' => 'radios',
+    '#title' => t('Color'),
+    '#options' => $colors,
+    '#default_value' => isset($attrs['color']) ? $attrs['color'] : '',
+    '#attributes' => array('class' => array('color-radios')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $form['dismissable'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Dismissable'),
+    '#default_value' => isset($attrs['dismissable']) ? $attrs['dismissable'] : TRUE,
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>'
+  );
+  return $form;
+}
+
+function wunderkind_shortcodes_shortcode_message_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Message box:</strong><br/>[message][/message]</br>';
+  $output[] = 'Available classes: alert-danger, alert-info, alert-warning, alert-success, alert-dismissable.</p>';
+  return implode(' ', $output);
+}
+
+function wunderkind_shortcodes_shortcode_button($attrs, $text) {
+  $attrs['class'] = 'btn ' . (isset($attrs['class']) ? $attrs['class'] : '');
+  $attrs['class'] .= isset($attrs['color']) && (!isset($attrs['color_type']) || !$attrs['color_type']) ? ' ' . $attrs['color'] : '';
+  $attrs['class'] .= isset($attrs['size']) ? ' ' . $attrs['size'] : '';
+  if(isset($attrs['color_type']) && $attrs['color_type'] && isset($attrs['custom_color']) && $attrs['custom_color']) {
+    $attrs['style_background_color'] = trim($attrs['custom_color'], '#');
+    if(strtolower($attrs['style_background_color']) == 'ffffff') {
+      $attrs['class'] .= ' btn-white';
+    }
+  }
+  $attrs['href'] = strpos($attrs['link'], '#') === FALSE ? url($attrs['link']) : $attrs['link'];
+  $text .= isset($attrs['text']) ? $attrs['text'] : '';
+  $text = isset($attrs['icon']) ? '<i class = "' . $attrs['icon'] . '"></i>&nbsp; ' . $text : $text;
+  $text = '<a ' . _wunderkind_shortcodes_shortcode_attributes($attrs)  . '>' . $text . '</a>';
+  return $text;
+}
+
+function wunderkind_shortcodes_shortcode_button_settings($attrs, $text) {
+  $form['icon'] = array(
+    '#title' => t('Icon'),
+    '#type' => 'textfield',
+    '#autocomplete_path' => 'admin/ajax/nd_visualshortcodes/icons_autocomplete/font_awesome',
+    '#default_value' => isset($attrs['icon']) ? $attrs['icon'] : '',
+    '#attributes' => array('class' => array('form-control')),
+  );
+  $form['color_type'] = array(
+    '#title' => t('Custom Color'),
+    '#type' => 'checkbox',
+    '#default_value' => isset($attrs['color_type']) ? $attrs['color_type'] : FALSE,
+    '#attributes' => array('class' => array('color-type-select')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $colors = array('btn-danger' => t('Red'), 'btn-info' => t('Blue'), 'btn-warning' => t('Orange'), 'btn-success' => t('Green'), 'btn-primary' => t('Dark Blue'), 'btn-inverse' => t('Inverse'));
+  $form['color'] = array(
+    '#type' => 'radios',
+    '#title' => t('Color'),
+    '#options' => $colors,
+    '#default_value' => isset($attrs['color']) ? $attrs['color'] : 'btn-info',
+    '#attributes' => array('class' => array('color-radios')),
+    '#states' => array(
+      'visible' => array(
+        '.color-type-select' => array('checked' => FALSE),
+      ),
+    ),
+  );
+  $form['custom_color'] = array(
+    '#type' => 'textfield' ,
+    '#title' => t('Color'),
+    '#default_value' => isset($attrs['custom_color']) ? $attrs['custom_color'] : '',
+    '#states' => array(
+      'visible' => array(
+        '.color-type-select' => array('checked' => TRUE),
+      ),
+    ),
+    '#attributes' => array('class' => array('form-control colorpicker-enable')),
+  );
+  $sizes = array('btn-xs' => t('Small'),  'btn-sm' => t('Medium'), '' => t('Default'), 'btn-lg' => t('Large'));
+  $form['size'] = array(
+    '#type' => 'select',
+    '#title' => t('Size'),
+    '#options' => $sizes,
+    '#default_value' => isset($attrs['size']) ? $attrs['size'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>',
+  );
+  $form['text'] = array(
+    '#title' => t('Text'),
+    '#type' => 'textfield',
+    '#default_value' => isset($attrs['text']) ? $attrs['text'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $form['link'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Link'),
+    '#default_value' => isset($attrs['link']) ? $attrs['link'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>',
+  );
+  return $form;
+}
+
+function wunderkind_shortcodes_shortcode_button_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Button Link:</strong><br/>[button class="btn-lg btn-default" link = "contact"]Text[/button]</br>';
+  $output[] = '<strong>link</strong> - URL to linked content.</br>';
+  $output[] = 'Available size classes: <strong>btn-lg</strong> - Big, <strong>btn-sm</strong> - Small, by default - Medium.</br>';
+  $output[] = 'Available color classes: <strong>btn-default</strong>, <strong>btn-primary</strong>, <strong>btn-info</strong>, <strong>btn-success</strong>, <strong>btn-warning</strong>, <strong>btn-danger</strong></p>';
+  return implode(' ', $output);
+}
+
+function wunderkind_shortcodes_ajax_ionicons_autocomplete($str) {
+  $icons = array("ios7-moon", "ios7-moon-outline", "ios7-more", "ios7-more-outline", "ios7-musical-note", "ios7-musical-notes", "ios7-navigate", "ios7-navigate-outline", "ios7-paper", "ios7-paper-outline", "ios7-paperplane", "ios7-paperplane-outline", "ios7-partlysunny", "ios7-partlysunny-outline", "ios7-pause", "ios7-pause-outline", "ios7-paw", "ios7-paw-outline", "ios7-people", "ios7-people-outline", "ios7-person", "ios7-person-outline", "ios7-personadd", "ios7-personadd-outline", "ios7-photos", "ios7-photos-outline", "ios7-pie", "ios7-pie-outline", "ios7-play", "ios7-play-outline", "ios7-plus", "ios7-plus-empty", "ios7-plus-outline", "ios7-pricetag", "ios7-pricetag-outline", "ios7-pricetags", "ios7-pricetags-outline", "ios7-printer", "ios7-printer-outline", "ios7-pulse", "ios7-pulse-strong", "ios7-rainy", "ios7-rainy-outline", "ios7-recording", "ios7-recording-outline", "ios7-redo", "ios7-redo-outline", "ios7-refresh", "ios7-refresh-empty", "ios7-refresh-outline", "ios7-reload", "ios7-reverse-camera", "ios7-reverse-camera-outline", "ios7-rewind", "ios7-rewind-outline", "ios7-search", "ios7-search-strong", "ios7-settings", "ios7-settings-strong", "ios7-shrink", "ios7-skipbackward", "ios7-skipbackward-outline", "ios7-skipforward", "ios7-skipforward-outline", "ios7-snowy", "ios7-speedometer", "ios7-speedometer-outline", "ios7-star", "ios7-star-half", "ios7-star-outline", "ios7-stopwatch", "ios7-stopwatch-outline", "ios7-sunny", "ios7-sunny-outline", "ios7-telephone", "ios7-telephone-outline", "ios7-tennisball", "ios7-tennisball-outline", "ios7-thunderstorm", "ios7-thunderstorm-outline", "ios7-time", "ios7-time-outline", "ios7-timer", "ios7-timer-outline", "ios7-toggle", "ios7-toggle-outline", "ios7-trash", "ios7-trash-outline", "ios7-undo", "ios7-undo-outline", "ios7-unlocked", "ios7-unlocked-outline", "ios7-upload", "ios7-upload-outline", "ios7-videocam", "ios7-videocam-outline", "ios7-volume-high", "ios7-volume-low", "ios7-wineglass", "ios7-wineglass-outline", "ios7-world", "ios7-world-outline", "ipad", "iphone", "ipod", "jet", "key", "knife", "laptop", "leaf", "levels", "lightbulb", "link", "load-a", "load-b", "load-c", "load-d", "location", "locked", "log-in", "log-out", "loop", "magnet", "male", "man", "map", "medkit", "merge", "mic-a", "mic-b", "mic-c", "minus", "minus-circled", "minus-round", "model-s", "monitor", "more", "mouse", "music-note", "navicon", "navicon-round", "navigate", "network", "no-smoking", "nuclear", "outlet", "paper-airplane", "paperclip", "pause", "person", "person-add", "person-stalker", "pie-graph", "pin", "pinpoint", "pizza", "plane", "planet", "play", "playstation", "plus", "plus-circled", "plus-round", "podium", "pound", "power", "pricetag", "pricetags", "printer", "pull-request", "qr-scanner", "quote", "radio-waves", "record", "refresh", "reply", "reply-all", "ribbon-a", "ribbon-b", "sad", "scissors", "search", "settings", "share", "shuffle", "skip-backward", "skip-forward", "social-android", "social-android-outline", "social-apple", "social-apple-outline", "social-bitcoin", "social-bitcoin-outline", "social-buffer", "social-buffer-outline", "social-designernews", "social-designernews-outline", "social-dribbble", "social-dribbble-outline", "social-dropbox", "social-dropbox-outline", "social-facebook", "social-facebook-outline", "social-foursquare", "social-foursquare-outline", "social-freebsd-devil", "social-github", "social-github-outline", "social-google", "social-google-outline", "social-googleplus", "social-googleplus-outline", "social-hackernews", "social-hackernews-outline", "social-instagram", "social-instagram-outline", "social-linkedin", "social-linkedin-outline", "social-pinterest", "social-pinterest-outline", "social-reddit", "social-reddit-outline", "social-rss", "social-rss-outline", "social-skype", "social-skype-outline", "social-tumblr", "social-tumblr-outline", "social-tux", "social-twitter", "social-twitter-outline", "social-usd", "social-usd-outline", "social-vimeo", "social-vimeo-outline", "social-windows", "social-windows-outline", "social-wordpress", "social-wordpress-outline", "social-yahoo", "social-yahoo-outline", "social-youtube", "social-youtube-outline", "speakerphone", "speedometer", "spoon", "star", "stats-bars", "steam", "stop", "thermometer", "thumbsdown", "thumbsup", "toggle", "toggle-filled", "trash-a", "trash-b", "trophy", "umbrella", "university", "unlocked", "upload", "usb", "videocamera", "volume-high", "volume-low", "volume-medium", "volume-mute", "wand", "waterdrop", "wifi", "wineglass", "woman", "wrench", "xbox");
+  $matches = array();
+  foreach ($icons as $icon) {
+    if(stripos($icon, $str) !== FALSE) {
+      $matches[$icon] = $icon;
+    }
+  }
+  drupal_json_output($matches);
+}

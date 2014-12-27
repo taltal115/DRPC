@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Wunderkind Features feature.
+ */
+
+include_once 'wunderkind_features.features.inc';
